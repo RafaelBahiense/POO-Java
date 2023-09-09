@@ -1,0 +1,10 @@
+**/.idea/
+**/build/
+**/nbproject/private/
+**/out/
+**/nbbuild/
+**/dist/
+**/nbdist/
+**/nbactions.xml
+**/nb-configuration.x
+**/lib/CopyLibs
