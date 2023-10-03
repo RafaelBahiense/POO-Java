@@ -12,6 +12,9 @@ public class MainFrame extends JFrame {
     private CardLayout cardLayout;
     
     private JPanel panelContainer;
+    
+    private LoginPagePanel loginPanel;
+    private AddClientPagePanel addClientPanel;
     private HomePagePanel homePanel;
     private CalcPagePanel calcPanel;
     private ResultPagePanel resultPanel;
@@ -49,11 +52,17 @@ public class MainFrame extends JFrame {
             resultPanel.ReRender();
             cardLayout.show(panelContainer, "Result Page");
         };
-        
+        Runnable loginPageButton = () -> cardLayout.show(panelContainer, "AddClient Page");
+        Runnable addClientPageButton = () -> cardLayout.show(panelContainer, "Home Page");
+
+        loginPanel = new LoginPagePanel(loginPageButton);
+        addClientPanel = new AddClientPagePanel(addClientPageButton);
         homePanel = new HomePagePanel(goToCalcPagePanel);
         calcPanel = new CalcPagePanel(goToResultPagePanel);
         resultPanel = new ResultPagePanel(goToHomePagePanel, goToCalcPagePanel);
         
+        panelContainer.add(loginPanel, "Login Page");
+        panelContainer.add(addClientPanel, "AddClient Page");
         panelContainer.add(homePanel, "Home Page");
         panelContainer.add(calcPanel, "Calc Page");
         panelContainer.add(resultPanel, "Result Page");
