@@ -1,4 +1,4 @@
-package imc.calculator;
+package fitsystem;
 
 import java.awt.*;
 
