@@ -1,5 +1,6 @@
-package fitsystem;
+package fitsystem.pages;
 
+import fitsystem.GridBagConstraintsFactory;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
