@@ -2,12 +2,14 @@ package fitsystem;
 
 
 import fitsystem.entities.Admin;
+import fitsystem.entities.Client;
 import fitsystem.pages.*;
 import fitsystem.persistence.DatabaseService;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.SQLException;
@@ -25,9 +27,10 @@ public class MainFrame extends JFrame {
     private JPanel panelContainer;
     
     private LoginPagePanel loginPanel;
+    private ClientsPagePanel clientsPanel;
     private AddClientPagePanel addClientPanel;
-    private HomePagePanel homePanel;
-    private CalcPagePanel calcPanel;
+    private IMCHomePagePanel homePanel;
+    private IMCCalcPagePanel calcPanel;
     private ResultPagePanel resultPanel;
 
 
@@ -63,7 +66,7 @@ public class MainFrame extends JFrame {
         });
     }
 
-    private void InitComponents() {
+    private void InitComponents() throws SQLException {
         panelContainer = new JPanel(cardLayout);
         
         border = BorderFactory.createEmptyBorder(15, 15, 15, 15);   
@@ -71,40 +74,45 @@ public class MainFrame extends JFrame {
         
         panelContainer.setBorder(border);
         panelContainer.setLayout(cardLayout);
-        
+
+        Runnable loginPageButton = () -> {
+            try {
+                clientsPanel.ReRender();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            cardLayout.show(panelContainer, "Clients Page");
+        };
+        Runnable goToAddClientPageButton = () -> cardLayout.show(panelContainer, "AddClient Page");
         Runnable goToHomePagePanel = () -> cardLayout.show(panelContainer, "Home Page");
         Runnable goToCalcPagePanel = () -> cardLayout.show(panelContainer, "Calc Page");
         Runnable goToResultPagePanel = () -> {
             resultPanel.ReRender();
             cardLayout.show(panelContainer, "Result Page");
         };
-        Runnable loginPageButton = () -> {
-
-            cardLayout.show(panelContainer, "AddClient Page");
-        };
         Runnable addClientPageButton = () -> cardLayout.show(panelContainer, "Home Page");
 
         loginPanel = new LoginPagePanel(loginPageButton, this::login);
+        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, this::getClients);
         addClientPanel = new AddClientPagePanel(addClientPageButton);
-        homePanel = new HomePagePanel(goToCalcPagePanel);
-        calcPanel = new CalcPagePanel(goToResultPagePanel);
+        homePanel = new IMCHomePagePanel(goToCalcPagePanel);
+        calcPanel = new IMCCalcPagePanel(goToResultPagePanel);
         resultPanel = new ResultPagePanel(goToHomePagePanel, goToCalcPagePanel);
         
-        //panelContainer.add(new NewJPanel(), "");
         panelContainer.add(loginPanel, "Login Page");
+        panelContainer.add(clientsPanel, "Clients Page");
         panelContainer.add(addClientPanel, "AddClient Page");
         panelContainer.add(homePanel, "Home Page");
         panelContainer.add(calcPanel, "Calc Page");
         panelContainer.add(resultPanel, "Result Page");
     }
-
-    public void goToCaclPage() {
-        cardLayout.show(panelContainer, "Calc Page");
-    }
-
     
     private Admin login(String username, String password) throws SQLException {
         return this.databaseService.login(username, password);
     }
-    
+
+    private List<Client> getClients() throws SQLException {
+        return this.databaseService.getClients();
+    }
+
 }

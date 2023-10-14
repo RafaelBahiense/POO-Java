@@ -7,7 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 
-public class HomePagePanel extends JPanel {
+public class IMCHomePagePanel extends JPanel {
     
     private GridBagLayout layoutManager;
     
@@ -18,7 +18,7 @@ public class HomePagePanel extends JPanel {
     private JButton goToCalcPageButton;
     private Runnable goToCaclPageButtonActionPerformaded;
     
-    public HomePagePanel(Runnable goToCaclPageButtonActionPerformaded) {
+    public IMCHomePagePanel(Runnable goToCaclPageButtonActionPerformaded) {
         this.goToCaclPageButtonActionPerformaded = goToCaclPageButtonActionPerformaded;
         InitComponents();
     }

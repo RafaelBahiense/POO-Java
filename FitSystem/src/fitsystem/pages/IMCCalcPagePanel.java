@@ -8,7 +8,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 
-public class CalcPagePanel extends JPanel {
+public class IMCCalcPagePanel extends JPanel {
     
     private LayoutManager layoutManager;
     
@@ -27,7 +27,7 @@ public class CalcPagePanel extends JPanel {
     private Runnable goToResultPageButtonActionPerformaded;
     
     
-    public CalcPagePanel(Runnable goToResultPageButtonActionPerformaded) {
+    public IMCCalcPagePanel(Runnable goToResultPageButtonActionPerformaded) {
         this.goToResultPageButtonActionPerformaded = goToResultPageButtonActionPerformaded;
         InitComponents();
     }
