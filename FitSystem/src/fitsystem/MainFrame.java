@@ -52,7 +52,7 @@ public class MainFrame extends JFrame {
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
                 try {
-                    if (databaseService != null) { 
+                    if (databaseService != null) {
                         databaseService.closeConnection();
                     }
                 } catch (SQLException sqlException) {

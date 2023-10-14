@@ -24,12 +24,6 @@ public class Main {
                 mainFrame = new MainFrame(databaseService);
             } catch (IOException | SQLException e) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
-            } finally {
-                try {
-                    databaseService.closeConnection();
-                } catch (SQLException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
         });
         
