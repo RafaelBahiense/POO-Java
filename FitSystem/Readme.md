@@ -33,13 +33,14 @@ USE fitsystem;
 
 -- Admin table
 CREATE TABLE admin (
-    username VARCHAR(255) NOT NULL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL
 );
 
 -- Client personal information table
 CREATE TABLE client (
-    client_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     gender ENUM('Male', 'Female', 'Other') NOT NULL,
@@ -49,12 +50,12 @@ CREATE TABLE client (
 
 -- Client health metrics table
 CREATE TABLE client_health_metrics (
-    metric_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     client_id INT,
     weight DECIMAL(5,2) NOT NULL,
     height DECIMAL(5,2) NOT NULL,
     imc_value DECIMAL(5,2) NOT NULL,
     date_recorded DATE NOT NULL DEFAULT (CURRENT_DATE),
-    FOREIGN KEY (client_id) REFERENCES client(client_id)
+    FOREIGN KEY (client_id) REFERENCES client(id)
 );
 ```

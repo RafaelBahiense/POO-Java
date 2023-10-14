@@ -1,4 +1,4 @@
-package fitsystem;
+package fitsystem.persistence;
 
 
 import java.sql.Connection;

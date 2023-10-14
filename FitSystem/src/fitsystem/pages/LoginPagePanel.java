@@ -1,9 +1,13 @@
 package fitsystem.pages;
 
 import fitsystem.GridBagConstraintsFactory;
+import fitsystem.actions.LoginFunction;
+import fitsystem.entities.Admin;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.*;
 
 
@@ -21,9 +25,11 @@ public class LoginPagePanel extends JPanel {
     
     private JButton loginButton;
     private Runnable loginButtonActionPerformaded;
+    private LoginFunction loginFunction;
     
-    public LoginPagePanel(Runnable loginButtonActionPerformaded) {
+    public LoginPagePanel(Runnable loginButtonActionPerformaded, LoginFunction loginFunction) {
         this.loginButtonActionPerformaded = loginButtonActionPerformaded;
+        this.loginFunction = loginFunction;
         InitComponents();
     }
     
@@ -45,6 +51,20 @@ public class LoginPagePanel extends JPanel {
         
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                var username = usernameInput.getText();
+                var password = passwordInput.getText();
+                Admin admin = null;
+                try {
+                    admin = loginFunction.Login(username, password);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                if (admin == null) {
+                    JOptionPane.showMessageDialog(null, "Usuário não encontrado");
+                    return;
+                }
+
                 loginButtonActionPerformaded.run();
             }
         });
