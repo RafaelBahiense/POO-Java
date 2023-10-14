@@ -40,11 +40,12 @@ public class MainFrame extends JFrame {
     private void SetupFrame() {
         add(panelContainer, BorderLayout.CENTER);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
-        setTitle("Calculadora do IMC");
-        setMaximumSize(new Dimension(500, 500));
-        setMinimumSize(new Dimension(500, 500));
-        setPreferredSize(new Dimension(500, 500));
+        setSize(500, 550);
+        setTitle("FitSystem");
+        setMaximumSize(new Dimension(500, 550));
+        setMinimumSize(new Dimension(500, 550));
+        setPreferredSize(new Dimension(500, 550));
+        setLocationRelativeTo(null);
         pack();
         setVisible(true);
         addWindowListener(new WindowAdapter() {
@@ -89,6 +90,7 @@ public class MainFrame extends JFrame {
         calcPanel = new CalcPagePanel(goToResultPagePanel);
         resultPanel = new ResultPagePanel(goToHomePagePanel, goToCalcPagePanel);
         
+        //panelContainer.add(new NewJPanel(), "");
         panelContainer.add(loginPanel, "Login Page");
         panelContainer.add(addClientPanel, "AddClient Page");
         panelContainer.add(homePanel, "Home Page");
