@@ -3,8 +3,13 @@ package fitsystem;
 import fitsystem.entities.Client;
 import fitsystem.entities.ClientHealthMetrics;
 
+import java.util.List;
+
 public class State {
     private static State instance;
+    public Client CurrentClient;
+    public ClientHealthMetrics CurrentClientHealthMetrics;
+    public List<Client> Clients;
 
     private State() {
         CurrentClient = new Client();
@@ -18,8 +23,4 @@ public class State {
         }
         return instance;
     }
-
-    public Client CurrentClient;
-
-    public ClientHealthMetrics CurrentClientHealthMetrics;
 }

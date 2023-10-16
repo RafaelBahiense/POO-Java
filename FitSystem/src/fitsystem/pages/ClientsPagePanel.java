@@ -1,5 +1,6 @@
 package fitsystem.pages;
 
+import fitsystem.State;
 import fitsystem.actions.GetClientsFunction;
 import fitsystem.entities.Client;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.BorderFactory;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientsPagePanel extends JPanel {
@@ -15,30 +17,37 @@ public class ClientsPagePanel extends JPanel {
 
     private JPanel addClientPanel;
     private JPanel clientsListPanel;
+    private JScrollPane clientsListScrollPane;
     private Runnable goToAddClientPageActionPerformaded;
     private GetClientsFunction getClientsFunction;
-    private List<Client> clients;
+    private State state;
 
-    public ClientsPagePanel(Runnable goToAddClientPageActionPerformaded, GetClientsFunction getClientsFunction) throws SQLException {
+    public ClientsPagePanel(Runnable goToAddClientPageActionPerformaded, GetClientsFunction getClientsFunction, State state) throws SQLException {
         this.goToAddClientPageActionPerformaded = goToAddClientPageActionPerformaded;
         this.getClientsFunction = getClientsFunction;
-        clients = getClientsFunction.GetClients();
+        this.state = state;
+        this.state.Clients = getClientsFunction.GetClients();
         InitComponents();
     }
 
     private void InitComponents() {
-        addClientPanel = new AddClientPanel(goToAddClientPageActionPerformaded, clients.size());
-        clientsListPanel = new ClientsListPanel();
+        addClientPanel = new AddClientPanel(goToAddClientPageActionPerformaded, state);
+        clientsListPanel = new ClientsListPanel(state);
+
+        clientsListScrollPane = new JScrollPane(clientsListPanel);
+        clientsListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        clientsListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
         layoutManager = new BoxLayout(this, BoxLayout.Y_AXIS);
 
         setLayout(layoutManager);
         add(addClientPanel);
         add(Box.createVerticalStrut(10));
-        add(clientsListPanel);
+        add(clientsListScrollPane);
     }
 
     public void ReRender() throws SQLException {
-        clients = getClientsFunction.GetClients();
+        state.Clients = getClientsFunction.GetClients();
         removeAll();
         InitComponents();
     }
@@ -47,17 +56,16 @@ public class ClientsPagePanel extends JPanel {
 class AddClientPanel extends JPanel {
     
     private GroupLayout layoutManager;
-
-    private int clientsCount;
     private JLabel title;
     private JLabel clientsCountLabel;
     private JButton addClientButton;
-
     private Runnable goToAddClientPageActionPerformaded;
+    private State state;
 
-    public AddClientPanel(Runnable goToAddClientPageActionPerformaded, int clientsCount) {
-        this.clientsCount = clientsCount;
+
+    public AddClientPanel(Runnable goToAddClientPageActionPerformaded, State state) {
         this.goToAddClientPageActionPerformaded = goToAddClientPageActionPerformaded;
+        this.state = state;
         InitComponents();
     }
 
@@ -69,7 +77,7 @@ class AddClientPanel extends JPanel {
         title.setText("Clientes Cadastrados");
 
         clientsCountLabel = new JLabel();
-        clientsCountLabel.setText("Clientes: " + clientsCount);
+        clientsCountLabel.setText("Clientes: " + state.Clients.size());
 
         addClientButton = new JButton();
         addClientButton.setText("Adicionar");
@@ -116,16 +124,111 @@ class AddClientPanel extends JPanel {
 
 class ClientsListPanel extends JPanel {
 
-    public ClientsListPanel() {
+    private BoxLayout layoutManager;
+    private State state;
+
+    private List<JPanel> clientEntriesPanels;
+    public ClientsListPanel(State state) {
+        this.state = state;
         InitComponents();
     }
 
     private void InitComponents() {;
-        setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        //setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+
+        clientEntriesPanels = new ArrayList<>();
+        //add(Box.createVerticalStrut(5));
+        for (Client client : state.Clients) {
+            var clientEntry = new ClientEntry(client);
+            clientEntriesPanels.add(clientEntry);
+            add(clientEntry);
+            add(Box.createVerticalStrut(10));
+        }
     }
 
     @Override
     public Dimension getMaximumSize() {
         return new Dimension(480, super.getMaximumSize().height);
+    }
+}
+
+class ClientEntry extends JPanel {
+
+    private GroupLayout layoutManager;
+    private JLabel nameLabel;
+    private JLabel ageLabel;
+    private JLabel genderLabel;
+    private JButton infosButton;
+    private JButton deleteClientButton;
+    private Client client;
+
+    public ClientEntry(Client client) {
+        this.client = client;
+        InitComponents();
+    }
+
+    private void InitComponents() {;
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+
+        nameLabel = new JLabel();
+        nameLabel.setText("Nome: " + client.Name);
+
+        ageLabel = new JLabel();
+        ageLabel.setText("Idade: " + client.Age);
+
+        genderLabel = new JLabel();
+        genderLabel.setText("Genero: " + client.Gender.toString());
+
+        infosButton = new JButton();
+        infosButton.setText("Infos");
+
+        deleteClientButton = new JButton();
+        deleteClientButton.setText("Deletar");
+
+        setMaximumSize(new Dimension(451, 130));
+        setPreferredSize(new Dimension(451, 130));
+
+        layoutManager = new javax.swing.GroupLayout(this);
+        setLayout(layoutManager);
+        layoutManager.setHorizontalGroup(
+                layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layoutManager.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(nameLabel)
+                                        .addComponent(genderLabel)
+                                        .addComponent(ageLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 314, Short.MAX_VALUE)
+                                .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(infosButton)
+                                        .addComponent(deleteClientButton))
+                                .addGap(14, 14, 14))
+        );
+        layoutManager.setVerticalGroup(
+                layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layoutManager.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(nameLabel)
+                                        .addComponent(infosButton))
+                                .addGap(18, 18, 18)
+                                .addComponent(ageLabel)
+                                .addGap(18, 18, 18)
+                                .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(genderLabel)
+                                        .addComponent(deleteClientButton))
+                                .addContainerGap(10, Short.MAX_VALUE))
+        );
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(super.getPreferredSize().width, 130);
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return new Dimension(451, super.getMaximumSize().height);
     }
 }

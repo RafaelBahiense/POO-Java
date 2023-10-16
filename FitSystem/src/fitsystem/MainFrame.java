@@ -102,13 +102,12 @@ public class MainFrame extends JFrame {
         };
 
         loginPanel = new LoginPagePanel(loginPageButton, this::login);
-        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, this::getClients);
+        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, this::getClients, state);
         addClientPanel = new AddClientPagePanel(addClientPageButton, this::insertClient, state);
         imcHomePanel = new IMCHomePagePanel(goToCalcPagePanel);
         calcPanel = new IMCCalcPagePanel(goToResultPagePanel, this::insertClientHealthMetrics, state);
         resultPanel = new ResultPagePanel(goToClientsPagePanel, state);
 
-        //panelContainer.add(calcPanel, "");
         panelContainer.add(loginPanel, "Login Page");
         panelContainer.add(clientsPanel, "Clients Page");
         panelContainer.add(addClientPanel, "AddClient Page");
