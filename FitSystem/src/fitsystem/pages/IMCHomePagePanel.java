@@ -51,11 +51,7 @@ public class IMCHomePagePanel extends JPanel {
                 + "</html>");
         
         goToCalcPageButton = new JButton("Ir para calculadora");
-        goToCalcPageButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                goToCaclPageButtonActionPerformaded.run();
-            }
-        });
+        goToCalcPageButton.addActionListener(e -> goToCaclPageButtonActionPerformaded.run());
         
         setLayout(layoutManager);
         add(title, GridBagConstraintsFactory.createGbc(0, 0));

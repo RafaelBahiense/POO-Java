@@ -2,12 +2,14 @@ package fitsystem.persistence;
 
 import fitsystem.entities.Admin;
 import fitsystem.entities.Client;
+import fitsystem.entities.ClientHealthMetrics;
 import fitsystem.entities.Gender;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +79,60 @@ public class DatabaseService {
         stmt.close();
 
         return result;
+    }
+
+    public int insertClient(Client client) throws SQLException {
+        String sql = "INSERT INTO client (name, age, gender, phone, address) VALUES (?, ?, ?, ?, ?)";
+
+        var stmt = dbConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+        stmt.setString(1, client.Name);
+        stmt.setInt(2, client.Age);
+        stmt.setString(3, client.Gender.toString());
+        stmt.setString(4, client.Phone);
+        stmt.setString(5, client.Address);
+
+        int affectedRows = stmt.executeUpdate();
+        if (affectedRows == 0) {
+            throw new SQLException("Creating client failed, no rows affected.");
+        }
+
+        try (var generatedKeys = stmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating client failed, no ID obtained.");
+            }
+        } finally {
+            stmt.close();
+        }
+    }
+
+    public int insertClientHealthMetrics(ClientHealthMetrics metrics) throws SQLException {
+        String sql = "INSERT INTO client_health_metrics (client_id, weight, height, imc_value, date_recorded) VALUES (?, ?, ?, ?, ?)";
+
+        var stmt = dbConnection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+        stmt.setInt(1, metrics.ClientId);
+        stmt.setBigDecimal(2, metrics.Weight);
+        stmt.setBigDecimal(3, metrics.Height);
+        stmt.setBigDecimal(4, metrics.ImcValue);
+        stmt.setDate(5, metrics.DateRecorded);
+
+        int affectedRows = stmt.executeUpdate();
+        if (affectedRows == 0) {
+            throw new SQLException("Creating client health metrics failed, no rows affected.");
+        }
+
+        try (var generatedKeys = stmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                return generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating client health metrics failed, no ID obtained.");
+            }
+        } finally {
+            stmt.close();
+        }
     }
 
     public void closeConnection() throws SQLException {
