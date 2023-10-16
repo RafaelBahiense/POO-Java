@@ -135,6 +135,32 @@ public class DatabaseService {
         }
     }
 
+    public void deleteClient(Client client) throws SQLException {
+        String deleteHealthMetricsSql = "DELETE FROM client_health_metrics WHERE client_id = ?";
+
+        var healthMetricsStmt = dbConnection.prepareStatement(deleteHealthMetricsSql);
+
+        healthMetricsStmt.setInt(1, client.Id);
+
+        healthMetricsStmt.executeUpdate();
+
+        healthMetricsStmt.close();
+
+        String deleteClientSql = "DELETE FROM client WHERE id = ?";
+
+        var clientStmt = dbConnection.prepareStatement(deleteClientSql);
+
+        clientStmt.setInt(1, client.Id);
+
+        int affectedRows = clientStmt.executeUpdate();
+        if (affectedRows == 0) {
+            throw new SQLException("Deleting client failed, no rows affected.");
+        }
+
+        clientStmt.close();
+    }
+
+
     public void closeConnection() throws SQLException {
         if (dbConnection != null) {
             dbConnection.close();

@@ -102,7 +102,7 @@ public class MainFrame extends JFrame {
         };
 
         loginPanel = new LoginPagePanel(loginPageButton, this::login);
-        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, this::getClients, state);
+        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, this::getClients, this::deleteClient, state);
         addClientPanel = new AddClientPagePanel(addClientPageButton, this::insertClient, state);
         imcHomePanel = new IMCHomePagePanel(goToCalcPagePanel);
         calcPanel = new IMCCalcPagePanel(goToResultPagePanel, this::insertClientHealthMetrics, state);
@@ -134,5 +134,27 @@ public class MainFrame extends JFrame {
     private int insertClientHealthMetrics(ClientHealthMetrics clientHealthMetrics) throws SQLException {
         return this.databaseService.insertClientHealthMetrics(clientHealthMetrics);
     }
+
+    private void deleteClient(Client client) {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                databaseService.deleteClient(client);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    get();
+                    clientsPanel.ReRender();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker.execute();
+    }
+
 
 }

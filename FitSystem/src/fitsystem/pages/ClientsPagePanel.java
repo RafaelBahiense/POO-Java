@@ -1,6 +1,7 @@
 package fitsystem.pages;
 
 import fitsystem.State;
+import fitsystem.actions.DeleteClientFunction;
 import fitsystem.actions.GetClientsFunction;
 import fitsystem.entities.Client;
 
@@ -20,11 +21,13 @@ public class ClientsPagePanel extends JPanel {
     private JScrollPane clientsListScrollPane;
     private Runnable goToAddClientPageActionPerformaded;
     private GetClientsFunction getClientsFunction;
+    private DeleteClientFunction deleteClientFunction;
     private State state;
 
-    public ClientsPagePanel(Runnable goToAddClientPageActionPerformaded, GetClientsFunction getClientsFunction, State state) throws SQLException {
+    public ClientsPagePanel(Runnable goToAddClientPageActionPerformaded, GetClientsFunction getClientsFunction, DeleteClientFunction deleteClientFunction, State state) throws SQLException {
         this.goToAddClientPageActionPerformaded = goToAddClientPageActionPerformaded;
         this.getClientsFunction = getClientsFunction;
+        this.deleteClientFunction = deleteClientFunction;
         this.state = state;
         this.state.Clients = getClientsFunction.GetClients();
         InitComponents();
@@ -32,7 +35,7 @@ public class ClientsPagePanel extends JPanel {
 
     private void InitComponents() {
         addClientPanel = new AddClientPanel(goToAddClientPageActionPerformaded, state);
-        clientsListPanel = new ClientsListPanel(state);
+        clientsListPanel = new ClientsListPanel(deleteClientFunction, state);
 
         clientsListScrollPane = new JScrollPane(clientsListPanel);
         clientsListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -47,9 +50,17 @@ public class ClientsPagePanel extends JPanel {
     }
 
     public void ReRender() throws SQLException {
-        state.Clients = getClientsFunction.GetClients();
-        removeAll();
-        InitComponents();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                state.Clients = getClientsFunction.GetClients();
+                removeAll();
+                InitComponents();
+                revalidate();
+                repaint();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
 
@@ -126,21 +137,20 @@ class ClientsListPanel extends JPanel {
 
     private BoxLayout layoutManager;
     private State state;
-
+    private DeleteClientFunction deleteClientFunction;
     private List<JPanel> clientEntriesPanels;
-    public ClientsListPanel(State state) {
+    public ClientsListPanel(DeleteClientFunction deleteClientFunction, State state) {
+        this.deleteClientFunction = deleteClientFunction;
         this.state = state;
         InitComponents();
     }
 
     private void InitComponents() {;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        //setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 
         clientEntriesPanels = new ArrayList<>();
-        //add(Box.createVerticalStrut(5));
         for (Client client : state.Clients) {
-            var clientEntry = new ClientEntry(client);
+            var clientEntry = new ClientEntry(client, deleteClientFunction);
             clientEntriesPanels.add(clientEntry);
             add(clientEntry);
             add(Box.createVerticalStrut(10));
@@ -162,9 +172,11 @@ class ClientEntry extends JPanel {
     private JButton infosButton;
     private JButton deleteClientButton;
     private Client client;
+    private DeleteClientFunction deleteClientFunction;
 
-    public ClientEntry(Client client) {
+    public ClientEntry(Client client, DeleteClientFunction deleteClientFunction) {
         this.client = client;
+        this.deleteClientFunction = deleteClientFunction;
         InitComponents();
     }
 
@@ -185,6 +197,13 @@ class ClientEntry extends JPanel {
 
         deleteClientButton = new JButton();
         deleteClientButton.setText("Deletar");
+        deleteClientButton.addActionListener(evt -> {
+            try {
+                deleteClientFunction.deleteClient(client);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         setMaximumSize(new Dimension(451, 130));
         setPreferredSize(new Dimension(451, 130));
