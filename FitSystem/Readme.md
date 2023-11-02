@@ -11,11 +11,19 @@ Docker installed on your machine.
 Before using FitSystem, you need to set up and configure the database.
 Step 1: Run MySQL Docker Container
 
-Run the following command to start a MySQL container:
-
+Run the following command to start a MySQL container, where `C:/my-sql-path` is the path to the directory where you want to store the database files on your host machine (Windows as example),
+and `/var/lib/mysql` is the path where the database files will be stored inside the container.
 
 ```bash
-docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=my-password -v C:/my-sql-path:/var/lib/mysql -p 3306:3306 mysql/mysql-server
+    docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=my-password -v C:/my-sql-path:/var/lib/mysql -p 3306:3306 mysql/mysql-server
+```
+
+Inside the container, you can connect to the MySQL server using the following command, it will grant all root functionalities to the user root from any host (i.e., %):
+
+```bash
+    CREATE USER 'root'@'%' IDENTIFIED BY '123456';
+    GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'; 
+    FLUSH PRIVILEGES;
 ```
 
 This will pull the MySQL image (if not already present) and run it in a container named mysql. The root password for the MySQL server is set to 123456, and the data will be stored in D:/DBs/mysql on your host machine.
