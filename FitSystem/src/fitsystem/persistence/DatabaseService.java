@@ -160,6 +160,78 @@ public class DatabaseService {
         clientStmt.close();
     }
 
+    public void updateClient(Client client, ClientHealthMetrics clientHealthMetrics) throws SQLException {
+        var updateClientSql = "UPDATE client SET name = ?, age = ?, gender = ?, phone = ?, address = ? WHERE id = ?";
+
+        var clientStmt = dbConnection.prepareStatement(updateClientSql);
+
+        clientStmt.setString(1, client.Name);
+        clientStmt.setInt(2, client.Age);
+        clientStmt.setString(3, client.Gender.toString());
+        clientStmt.setString(4, client.Phone);
+        clientStmt.setString(5, client.Address);
+        clientStmt.setInt(6, client.Id);
+
+        int affectedRows = clientStmt.executeUpdate();
+        if (affectedRows == 0) {
+            throw new SQLException("Deleting client failed, no rows affected.");
+        }
+
+        clientStmt.close();
+
+
+        var updateHealthMetricsSql = "UPDATE client_health_metrics SET weight = ?, height = ?, imc_value = ?, date_recorded = ? WHERE id = ?";
+
+        var healthMetricsStmt = dbConnection.prepareStatement(updateHealthMetricsSql);
+
+        healthMetricsStmt.setBigDecimal(1, clientHealthMetrics.Weight);
+        healthMetricsStmt.setBigDecimal(2, clientHealthMetrics.Height);
+        healthMetricsStmt.setBigDecimal(3, clientHealthMetrics.ImcValue);
+        healthMetricsStmt.setDate(4, clientHealthMetrics.DateRecorded);
+        healthMetricsStmt.setInt(5, clientHealthMetrics.Id);
+
+        affectedRows = healthMetricsStmt.executeUpdate();
+        if (affectedRows == 0) {
+            throw new SQLException("Deleting client failed, no rows affected.");
+        }
+
+        healthMetricsStmt.close();
+    }
+
+    public List<ClientHealthMetrics> GetClientHealthMetrics(int clientId) throws SQLException {
+        List<ClientHealthMetrics> result = new ArrayList<>();
+
+        String sql = "SELECT * FROM client_health_metrics WHERE client_id = ?";
+        var stmt = dbConnection.prepareStatement(sql);
+
+        stmt.setInt(1, clientId);
+
+        var rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            var id = rs.getInt("id");
+            var weight = rs.getBigDecimal("weight");
+            var height = rs.getBigDecimal("height");
+            var imcValue = rs.getBigDecimal("imc_value");
+            var dateRecorded = rs.getDate("date_recorded");
+
+            ClientHealthMetrics clientHealthMetrics = new ClientHealthMetrics();
+            clientHealthMetrics.Id = id;
+            clientHealthMetrics.ClientId = clientId;
+            clientHealthMetrics.Weight = weight;
+            clientHealthMetrics.Height = height;
+            clientHealthMetrics.ImcValue = imcValue;
+            clientHealthMetrics.DateRecorded = dateRecorded;
+
+            result.add(clientHealthMetrics);
+        }
+
+        rs.close();
+        stmt.close();
+
+        return result;
+    }
+
 
     public void closeConnection() throws SQLException {
         if (dbConnection != null) {

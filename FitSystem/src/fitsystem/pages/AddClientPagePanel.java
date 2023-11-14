@@ -168,4 +168,12 @@ public class AddClientPagePanel extends JPanel {
                                 .addGap(49, 49, 49))
         );
     }
+
+    public void ReRender() throws SQLException {
+        nameInput.setText("");
+        ageSpinner.setValue(0);
+        genderCombo.setSelectedIndex(0);
+        phoneInput.setText("");
+        addressInput.setText("");
+    }
 }

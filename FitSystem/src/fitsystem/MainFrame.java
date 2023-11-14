@@ -27,6 +27,8 @@ public class MainFrame extends JFrame {
     private LoginPagePanel loginPanel;
     private ClientsPagePanel clientsPanel;
     private AddClientPagePanel addClientPanel;
+
+    private UpdateClientPagePanel updateClientPanel;
     private IMCHomePagePanel imcHomePanel;
     private IMCCalcPagePanel calcPanel;
     private ResultPagePanel resultPanel;
@@ -82,8 +84,22 @@ public class MainFrame extends JFrame {
             }
             cardLayout.show(panelContainer, "Clients Page");
         };
-        Runnable goToAddClientPageButton = () -> cardLayout.show(panelContainer, "AddClient Page");
-        Runnable goToClientsPagePanel = () -> cardLayout.show(panelContainer, "Clients Page");
+        Runnable goToAddClientPageButton = () ->  {
+            try {
+                addClientPanel.ReRender();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            cardLayout.show(panelContainer, "AddClient Page");
+        };
+        Runnable goToClientsPagePanel = () -> {
+            try {
+                clientsPanel.ReRender();
+                cardLayout.show(panelContainer, "Clients Page");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        };
         Runnable goToCalcPagePanel = () -> {
             calcPanel.ReRender();
             cardLayout.show(panelContainer, "Calc Page");
@@ -100,10 +116,19 @@ public class MainFrame extends JFrame {
             }
             cardLayout.show(panelContainer, "IMC Home Page");
         };
+        Runnable goToUpdateClientPagePanel = () -> {
+            try {
+                updateClientPanel.ReRender();
+                cardLayout.show(panelContainer, "UpdateClient Page");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        };
 
         loginPanel = new LoginPagePanel(loginPageButton, this::login);
-        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, this::getClients, this::deleteClient, state);
+        clientsPanel = new ClientsPagePanel(goToAddClientPageButton, goToUpdateClientPagePanel, this::getClients, this::deleteClient, state);
         addClientPanel = new AddClientPagePanel(addClientPageButton, this::insertClient, state);
+        updateClientPanel = new UpdateClientPagePanel(goToClientsPagePanel, this::updateClient, this::getClientHealthMetrics, state);
         imcHomePanel = new IMCHomePagePanel(goToCalcPagePanel);
         calcPanel = new IMCCalcPagePanel(goToResultPagePanel, this::insertClientHealthMetrics, state);
         resultPanel = new ResultPagePanel(goToClientsPagePanel, state);
@@ -111,6 +136,7 @@ public class MainFrame extends JFrame {
         panelContainer.add(loginPanel, "Login Page");
         panelContainer.add(clientsPanel, "Clients Page");
         panelContainer.add(addClientPanel, "AddClient Page");
+        panelContainer.add(updateClientPanel, "UpdateClient Page");
         panelContainer.add(imcHomePanel, "IMC Home Page");
         panelContainer.add(calcPanel, "Calc Page");
         panelContainer.add(resultPanel, "Result Page");
@@ -156,5 +182,12 @@ public class MainFrame extends JFrame {
         worker.execute();
     }
 
+    private void updateClient(Client client, ClientHealthMetrics clientHealthMetrics) throws SQLException {
+        this.databaseService.updateClient(client, clientHealthMetrics);
+    }
+
+    private List<ClientHealthMetrics> getClientHealthMetrics(int clientId) throws SQLException {
+        return this.databaseService.GetClientHealthMetrics(clientId);
+    }
 
 }

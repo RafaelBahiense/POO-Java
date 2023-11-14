@@ -100,7 +100,7 @@ public class IMCCalcPagePanel extends JPanel {
             clientHealthMetrics.DateRecorded = new Date(System.currentTimeMillis());
             clientHealthMetrics.Height = BigDecimal.valueOf(heightValueDouble);
             clientHealthMetrics.Weight = BigDecimal.valueOf(weightValueDouble);
-            clientHealthMetrics.ImcValue = BigDecimal.valueOf(Calculator.getIMC(heightValueDouble, weightValueDouble));
+            clientHealthMetrics.ImcValue = Calculator.getIMC(heightValueDouble, weightValueDouble);
 
             state.CurrentClientHealthMetrics = clientHealthMetrics;
 

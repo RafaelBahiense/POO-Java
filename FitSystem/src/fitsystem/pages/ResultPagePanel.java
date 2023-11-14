@@ -61,7 +61,7 @@ public class ResultPagePanel extends JPanel  {
     }
     
     public void ReRender() {
-        imcResult.setText(state.CurrentClient.Name + " seu IMC é: " + state.CurrentClientHealthMetrics.ImcValue);
+        imcResult.setText(state.CurrentClient.Name + " seu IMC é: " + state.CurrentClientHealthMetrics.ImcValue.toString());
         imcClassification.setText("Classificação: " + Calculator.getIMCClassification(state.CurrentClientHealthMetrics.ImcValue.doubleValue()));
     }
 }

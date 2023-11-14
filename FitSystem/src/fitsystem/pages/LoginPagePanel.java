@@ -23,7 +23,7 @@ public class LoginPagePanel extends JPanel {
     private JTextField usernameInput;
     
     private JLabel passwordLabel;
-    private JTextField passwordInput;
+    private JPasswordField passwordInput;
     
     private JButton loginButton;
     private Runnable loginButtonActionPerformaded;
@@ -49,7 +49,7 @@ public class LoginPagePanel extends JPanel {
         usernameInput = new JTextField();
         
         passwordLabel = new JLabel("Senha: ");
-        passwordInput = new JTextField();
+        passwordInput = new JPasswordField();
         
         loginButton = new JButton("Login");
         
@@ -82,9 +82,9 @@ public class LoginPagePanel extends JPanel {
                     .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layoutManager.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(12, 12, 12)
-                            .addComponent(usernameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(usernameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(9, 9, 9)
+                            .addComponent(usernameInput, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layoutManager.createSequentialGroup()
                             .addContainerGap()
                             .addComponent(passwordLabel)

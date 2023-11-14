@@ -1,10 +1,17 @@
 package fitsystem;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class Calculator {
 
-    public static double getIMC(double height, double weight) {
-        return weight/(height*2);
+    public static BigDecimal getIMC(double height, double weight) {
+        var result = BigDecimal.valueOf(weight/(height*2));
+
+        result = result.setScale(2, RoundingMode.CEILING);
+
+        return result;
     }
     
     public static String getIMCClassification(double imc) {

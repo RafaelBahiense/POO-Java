@@ -20,12 +20,15 @@ public class ClientsPagePanel extends JPanel {
     private JPanel clientsListPanel;
     private JScrollPane clientsListScrollPane;
     private Runnable goToAddClientPageActionPerformaded;
+
+    private Runnable goToUpdateClientPagePanel;
     private GetClientsFunction getClientsFunction;
     private DeleteClientFunction deleteClientFunction;
     private State state;
 
-    public ClientsPagePanel(Runnable goToAddClientPageActionPerformaded, GetClientsFunction getClientsFunction, DeleteClientFunction deleteClientFunction, State state) throws SQLException {
+    public ClientsPagePanel(Runnable goToAddClientPageActionPerformaded, Runnable goToUpdateClientPagePanel, GetClientsFunction getClientsFunction, DeleteClientFunction deleteClientFunction, State state) throws SQLException {
         this.goToAddClientPageActionPerformaded = goToAddClientPageActionPerformaded;
+        this.goToUpdateClientPagePanel = goToUpdateClientPagePanel;
         this.getClientsFunction = getClientsFunction;
         this.deleteClientFunction = deleteClientFunction;
         this.state = state;
@@ -35,7 +38,7 @@ public class ClientsPagePanel extends JPanel {
 
     private void InitComponents() {
         addClientPanel = new AddClientPanel(goToAddClientPageActionPerformaded, state);
-        clientsListPanel = new ClientsListPanel(deleteClientFunction, state);
+        clientsListPanel = new ClientsListPanel(deleteClientFunction, state, goToUpdateClientPagePanel);
 
         clientsListScrollPane = new JScrollPane(clientsListPanel);
         clientsListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -100,10 +103,10 @@ class AddClientPanel extends JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layoutManager.createSequentialGroup()
                 .addContainerGap(141, Short.MAX_VALUE)
                 .addComponent(title)
-                .addGap(138, 138, 138))
+                .addGap(120, 120, 120))
             .addGroup(layoutManager.createSequentialGroup()
                 .addGap(32, 32, 32)
-                .addComponent(clientsCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(clientsCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(addClientButton)
                 .addGap(24, 24, 24))
@@ -138,10 +141,13 @@ class ClientsListPanel extends JPanel {
     private BoxLayout layoutManager;
     private State state;
     private DeleteClientFunction deleteClientFunction;
+
+    private Runnable goToUpdateClientPagePanel;
     private List<JPanel> clientEntriesPanels;
-    public ClientsListPanel(DeleteClientFunction deleteClientFunction, State state) {
+    public ClientsListPanel(DeleteClientFunction deleteClientFunction, State state, Runnable goToUpdateClientPagePanel) {
         this.deleteClientFunction = deleteClientFunction;
         this.state = state;
+        this.goToUpdateClientPagePanel = goToUpdateClientPagePanel;
         InitComponents();
     }
 
@@ -150,7 +156,7 @@ class ClientsListPanel extends JPanel {
 
         clientEntriesPanels = new ArrayList<>();
         for (Client client : state.Clients) {
-            var clientEntry = new ClientEntry(client, deleteClientFunction);
+            var clientEntry = new ClientEntry(client, state, deleteClientFunction, goToUpdateClientPagePanel);
             clientEntriesPanels.add(clientEntry);
             add(clientEntry);
             add(Box.createVerticalStrut(10));
@@ -169,14 +175,19 @@ class ClientEntry extends JPanel {
     private JLabel nameLabel;
     private JLabel ageLabel;
     private JLabel genderLabel;
-    private JButton infosButton;
+    private JButton editButton;
     private JButton deleteClientButton;
     private Client client;
+    private Runnable goToUpdateClientPagePanel;
     private DeleteClientFunction deleteClientFunction;
 
-    public ClientEntry(Client client, DeleteClientFunction deleteClientFunction) {
+    private State state;
+
+    public ClientEntry(Client client, State state, DeleteClientFunction deleteClientFunction, Runnable goToUpdateClientPagePanel) {
         this.client = client;
+        this.state = state;
         this.deleteClientFunction = deleteClientFunction;
+        this.goToUpdateClientPagePanel = goToUpdateClientPagePanel;
         InitComponents();
     }
 
@@ -192,8 +203,12 @@ class ClientEntry extends JPanel {
         genderLabel = new JLabel();
         genderLabel.setText("Genero: " + client.Gender.toString());
 
-        infosButton = new JButton();
-        infosButton.setText("Infos");
+        editButton = new JButton();
+        editButton.setText("Editar");
+        editButton.addActionListener(evt -> {
+            state.CurrentClient = client;
+            goToUpdateClientPagePanel.run();
+        });
 
         deleteClientButton = new JButton();
         deleteClientButton.setText("Deletar");
@@ -220,7 +235,7 @@ class ClientEntry extends JPanel {
                                         .addComponent(ageLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 314, Short.MAX_VALUE)
                                 .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(infosButton)
+                                        .addComponent(editButton)
                                         .addComponent(deleteClientButton))
                                 .addGap(14, 14, 14))
         );
@@ -230,7 +245,7 @@ class ClientEntry extends JPanel {
                                 .addGap(12, 12, 12)
                                 .addGroup(layoutManager.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(nameLabel)
-                                        .addComponent(infosButton))
+                                        .addComponent(editButton))
                                 .addGap(18, 18, 18)
                                 .addComponent(ageLabel)
                                 .addGap(18, 18, 18)
